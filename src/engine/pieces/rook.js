@@ -19,10 +19,11 @@ export default class Rook extends Piece {
                 arr.push({"row": location.row , "col" : i})
             
         }
-        return arr;
     }
+        return arr;
+    
 }
-
+}
 // find current position
 // check if vertical up move is available - loop for consecutive squares
 // check if vertical down move is available
