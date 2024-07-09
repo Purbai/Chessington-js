@@ -12,6 +12,9 @@ export default class Pawn extends Piece {
         let checkGetPiece = [];
         let checkGetPiece2 = [];
         if (this.player === Player.WHITE) {
+            if (location.row === 7) {
+                return []
+            }
             if (this.hasPieceMoved) {
                 // check if the one square up has a piece on it
                 checkGetPiece = board.getPiece(Square.at(location.row + 1, location.col)); // return the piece that is on this square
@@ -42,6 +45,10 @@ export default class Pawn extends Piece {
             }
 
         } else {
+            // black piece moves
+            if (location.row === 0) {
+                return []
+            }
             if (this.hasPieceMoved) {
                 // check if the one square down has a piece on it
                 checkGetPiece = board.getPiece(Square.at(location.row - 1, location.col)); // return the piece that is on this square
