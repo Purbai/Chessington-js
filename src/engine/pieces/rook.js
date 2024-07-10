@@ -8,49 +8,50 @@ export default class Rook extends Piece {
         super(player);
     }
 
+
+findMoves(board,checkType,colrow, arr) {
+    // console.log("Inside function")
+    let x
+    let y
+    let checkGetPiece
+
+    // loop through all horizontal and vertical squares and store position (except current square) to array for either row or col
+    for (let i=0;i < 8; i++)
+    {   
+        // define the x/y based on the whether we are checking row or col (input paramenter checktype)
+        if (checkType == "row" ) {
+            x = colrow // default to the check this row only
+            y = i
+        } else if (checkType == "col" ) {
+            x = i
+            y = colrow // default to check this col only
+        }
+            // check piece        
+            checkGetPiece = board.getPiece(Square.at(x,y)) 
+  
+            // square is unoccupied
+            if( checkGetPiece === undefined ) {
+                //console.log('storing ', x,y)
+                arr.push({"row": x , "col" : y}) // push to available squares
+            } 
+            // check if square is occupied by opposing piece
+            else if (checkGetPiece !== undefined && checkGetPiece.player !== this.player) {
+                // we can take this opposing piece hence available
+                arr.push({"row": x , "col" : y})
+                break
+            } 
+            else if (checkGetPiece !== undefined && checkGetPiece.player == this.player && colrow === i) {
+                // we are on this piece hence not available
+                break
+            }
+}
+}
     getAvailableMoves(board) {
         let location = board.findPiece(this);
         let arr =[];
-        let checkGetPiece
-        // loop through all horizontal and vertical squares and store position (except current square) to array
-        for (let i=0;i < 8; i++)
-        {   
-            if (location.row !=i ){
-                // check piece
-                checkGetPiece = board.getPiece(Square.at(i, location.col)) 
-                // square is unoccupied
-                if( checkGetPiece === undefined ) {
-                    arr.push({"row": i , "col" : location.col}) // push to available squares
-                } 
-                // check if square is occupied by opposing piece
-                else if (checkGetPiece !== undefined && checkGetPiece.player !== this.player) {
-                    arr.push({"row": i , "col" : location.col})
-                    break
-                } 
-                // if path is blocked, break out of loop
-                else {
-                    break
-                }
-            }
+        this.findMoves(board,"row",location.row,arr)
+        this.findMoves(board,"col", location.col, arr)
 
-            if (location.col !=i ){
-                // check piece
-                checkGetPiece = board.getPiece(Square.at(location.row, i)) 
-                // check if square is unoccupied
-                if( checkGetPiece === undefined ) {
-                    arr.push({"row": location.row , "col" : i})
-                } 
-                // check if square is unoccupied by opposing piece
-                else if (checkGetPiece !== undefined && checkGetPiece.player !== this.player) {
-                    arr.push({"row": location.row , "col" : i})
-                    break
-                } 
-                // if path is blocked, break out of loop
-                else {
-                    break
-                }
-        }
-    }
         return arr;
     
 }
