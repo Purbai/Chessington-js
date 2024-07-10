@@ -3,7 +3,8 @@ import Queen from '../../../src/engine/pieces/queen';
 import Board from '../../../src/engine/board';
 import Player from '../../../src/engine/player';
 import Square from '../../../src/engine/square';
-
+import Rook from '../../../src/engine/pieces/rook';
+import Pawn from '../../../src/engine/pieces/pawn';
 
 /*  The queen can only move in straight lines (horizontally, vertically, and diagonally), but not combine those movement patterns. 
  For example, moving 5 squares horizontally and 3 squares diagonally is not allowed in a single move.
@@ -17,7 +18,7 @@ describe('Queen', () => {
         const queen = new Queen(Player.WHITE);
         board.setPiece(Square.at(1, 2), queen);
 
-        const moves = rook.getAvailableMoves(board);
+        const moves = queen.getAvailableMoves(board);
 
         const expectedMoves = [
             // Horizontal
@@ -37,20 +38,41 @@ describe('Queen', () => {
         const queen = new Queen(Player.WHITE);
         board.setPiece(Square.at(1, 2), queen);
 
-        const moves = rook.getAvailableMoves(board);
+        const moves = queen.getAvailableMoves(board);
 
         moves.should.have.length(23);
     });
 
-/*     it('cannot move through friendly pieces', () => {
+    it('cannot move through friendly pieces', () => {
         const queen = new Queen(Player.WHITE);
         const friendlyPiece = new Pawn(Player.WHITE);
         board.setPiece(Square.at(4, 4), queen);
         board.setPiece(Square.at(4, 6), friendlyPiece);
 
-        const moves = rook.getAvailableMoves(board);
+        const moves = queen.getAvailableMoves(board);
 
         moves.should.not.deep.include(Square.at(4, 7));
-    }); */
+    });
 
+    it('cannot move through opposing pieces', () => {
+        const queen = new Queen(Player.WHITE);
+        const opposingPiece = new Pawn(Player.BLACK);
+        board.setPiece(Square.at(4, 4), queen);
+        board.setPiece(Square.at(4, 6), opposingPiece);
+
+        const moves = queen.getAvailableMoves(board);
+
+        moves.should.not.deep.include(Square.at(4, 7));
+    });
+
+    it('cannot take a friendly piece', () => {
+        const queen = new Queen(Player.BLACK);
+        const friendlyPiece = new Rook(Player.BLACK);
+        board.setPiece(Square.at(4, 4), queen);
+        board.setPiece(Square.at(3, 3), friendlyPiece);
+
+        const moves = queen.getAvailableMoves(board);
+
+        moves.should.not.deep.include(Square.at(3, 3));
+    });
 });
