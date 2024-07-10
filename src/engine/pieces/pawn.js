@@ -1,6 +1,7 @@
 import Player from '../player';
 import Square from '../square';
 import Piece from './piece';
+import King from './king';
 import GameSettings from '../gameSettings';
 
 export default class Pawn extends Piece {
@@ -12,18 +13,13 @@ export default class Pawn extends Piece {
         let location = board.findPiece(this);
         let checkGetPiece = [];
         let checkGetPiece2 = [];
-        let posMoves = []
-        let playerSqColourSame ='';
-        let playerSqPiece ='';
+        let posMoves = [];
+        let isKing = false;
         if (this.player === Player.WHITE) {
             if (location.row === (GameSettings.BOARD_SIZE -1)) {
                 return posMoves;
             }
-            console.log('testing - white pieces')
-
-            if (location.row === 0) {
-                return []
-            }
+            //console.log('testing - white pieces')
             if (this.hasPieceMoved)
                  {
                 // check diagonally
@@ -43,12 +39,17 @@ export default class Pawn extends Piece {
             } else {
                  // check if there is a peice diagonally right that can be taken
                  checkGetPiece = board.getPiece(Square.at(location.row + 1, location.col + 1)) 
-   
-                 if (checkGetPiece !== undefined && checkGetPiece.player !==this.player) {
+                 // check if piece is King  
+                 isKing = board.getPiece(Square.at(location.row + 1, location.col + 1)) instanceof King
+
+                 if (checkGetPiece !== undefined && checkGetPiece.player !==this.player && !isKing) {
                      posMoves.push(Square.at(location.row + 1, location.col + 1)) 
                  }
-                 checkGetPiece = board.getPiece(Square.at(location.row + 1, location.col - 1))  
-                 if (checkGetPiece !== undefined && checkGetPiece.player !==this.player) {
+                 checkGetPiece = board.getPiece(Square.at(location.row + 1, location.col - 1))
+                 // check if piece is King  
+                 isKing = board.getPiece(Square.at(location.row + 1, location.col - 1)) instanceof King
+
+                 if (checkGetPiece !== undefined && checkGetPiece.player !==this.player && !isKing) {
                      posMoves.push(Square.at(location.row + 1, location.col - 1)) 
                  }
                 // check if one or two square down have pieces on it
@@ -69,7 +70,7 @@ export default class Pawn extends Piece {
 
         } else {
             // black piece moves
-            console.log('testing - black pieces')
+            // console.log('testing - black pieces')
             if (location.row === 0) {
                 return []
             }
@@ -92,14 +93,16 @@ export default class Pawn extends Piece {
             } else {
                  // check if there is a peice diagonally right that can be taken
                  checkGetPiece = board.getPiece(Square.at(location.row - 1, location.col - 1)) 
-   
-                 if (checkGetPiece !== undefined && checkGetPiece.player !==this.player) {
+                 isKing = board.getPiece(Square.at(location.row - 1, location.col - 1)) instanceof King
+                 if (checkGetPiece !== undefined && checkGetPiece.player !==this.player && !isKing) {
                      posMoves.push(Square.at(location.row - 1, location.col - 1)) 
                  }
                  checkGetPiece = board.getPiece(Square.at(location.row - 1, location.col + 1))
-                 if (checkGetPiece !== undefined && checkGetPiece.player !==this.player) {
+                 isKing = board.getPiece(Square.at(location.row - 1, location.col + 1)) instanceof King
+                 if (checkGetPiece !== undefined && checkGetPiece.player !==this.player && !isKing) {
                      posMoves.push(Square.at(location.row - 1, location.col + 1)) 
                  }
+                 
                 // check if one or two square down have pieces on it
                 checkGetPiece = board.getPiece(Square.at(location.row - 1, location.col)); // return the piece that is on this square
                 checkGetPiece2 = board.getPiece(Square.at(location.row - 2, location.col)); // return the piece that is on this square
