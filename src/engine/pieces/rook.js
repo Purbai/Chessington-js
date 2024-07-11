@@ -1,6 +1,6 @@
 import Piece from './piece';
 import Square from '../square';
-import Player from '../player';
+import King from './king';
 import GameSettings from '../gameSettings';
 
 
@@ -9,14 +9,15 @@ export default class Rook extends Piece {
         super(player);
     }
 
-    findMovesReverse(board,checkType,colrow, arr) {
+    findMovesReverse(board,checkType,colrow,colrowStart, arr) {
 
         let x
         let y
         let checkGetPiece
+        let isKing
     
         // loop through all horizontal and vertical squares and store position (except current square) to array for either row or col
-        for (let i=colrow-1;i >-1; i--)
+        for (let i=colrowStart-1;i >-1; i--)
         {   
             // define the x/y based on the whether we are checking row or col (input paramenter checktype)
             if (checkType == "row" ) {
@@ -29,33 +30,39 @@ export default class Rook extends Piece {
             //console.log('inside reverse :',x,y,i,colrow)
                 // check piece        
                 checkGetPiece = board.getPiece(Square.at(x,y)) 
+                isKing = board.getPiece(Square.at(x, y)) instanceof King
       
                 // square is unoccupied
                 if( checkGetPiece === undefined ) {
                     //console.log('storing ', x,y)
                     arr.push({"row": x , "col" : y}) // push to available squares
                 } 
-                // check if square is occupied by opposing piece
+                // check if square is occupied by opposing piece which is a King
+                else if (checkGetPiece !== undefined && checkGetPiece.player !== this.player && isKing) {
+                // we cannot take this opposing piece which is a king hence not available
+                    break
+                }                // check if square is occupied by opposing piece
                 else if (checkGetPiece !== undefined && checkGetPiece.player !== this.player) {
                     // we can take this opposing piece hence available
                     arr.push({"row": x , "col" : y})
                     break
                 } 
-                else if (checkGetPiece !== undefined && checkGetPiece.player == this.player && colrow === i) {
+                else if (checkGetPiece !== undefined && checkGetPiece.player == this.player) {
                     // we are on this piece hence not available
                     break
                 }
     }
     }
 
-findMoves(board,checkType,colrow, arr) {
+findMoves(board,checkType,colrow,colrowStart, arr) {
     // console.log("Inside function")
-    let x
-    let y
-    let checkGetPiece
+    let x;
+    let y;
+    let checkGetPiece;
+    let isKing;
 
     // loop through all horizontal and vertical squares and store position (except current square) to array for either row or col
-    for (let i=colrow+1;i < GameSettings.BOARD_SIZE; i++)
+    for (let i=colrowStart+1;i < GameSettings.BOARD_SIZE; i++)
     {   
         // define the x/y based on the whether we are checking row or col (input paramenter checktype)
         if (checkType == "row" ) {
@@ -67,11 +74,17 @@ findMoves(board,checkType,colrow, arr) {
         }
             // check piece        
             checkGetPiece = board.getPiece(Square.at(x,y)) 
+            isKing = board.getPiece(Square.at(x, y)) instanceof King
   
             // square is unoccupied
             if( checkGetPiece === undefined ) {
                 //console.log('storing ', x,y)
                 arr.push({"row": x , "col" : y}) // push to available squares
+            } 
+            // check if square is occupied by opposing piece which is a King
+            else if (checkGetPiece !== undefined && checkGetPiece.player !== this.player && isKing) {
+            // we cannot take this opposing piece which is a king hence not available
+                break
             } 
             // check if square is occupied by opposing piece
             else if (checkGetPiece !== undefined && checkGetPiece.player !== this.player) {
@@ -79,7 +92,7 @@ findMoves(board,checkType,colrow, arr) {
                 arr.push({"row": x , "col" : y})
                 break
             } 
-            else if (checkGetPiece !== undefined && checkGetPiece.player == this.player && colrow === i) {
+            else if (checkGetPiece !== undefined && checkGetPiece.player == this.player) {
                 // we are on this piece hence not available
                 break
             }
@@ -88,15 +101,18 @@ findMoves(board,checkType,colrow, arr) {
     getAvailableMoves(board) {
         let location = board.findPiece(this);
         let arr =[];
-        //console.log('checking row right')
-        this.findMoves(board,"row",location.row,arr)
-        //console.log('checking col top')
-        this.findMoves(board,"col", location.col, arr)
-        //console.log('checking row down')
-        this.findMovesReverse(board,"row",location.row,arr)
-        //console.log('checking col down')
-        this.findMovesReverse(board,"col", location.col, arr)
-        console.log(arr)
+        // console.log('checking row right')
+        this.findMoves(board,"row",location.row,location.col,arr)
+        // console.log(arr)
+        // console.log('checking col top')
+        this.findMoves(board,"col", location.col,location.row,arr)
+        // console.log(arr)
+        // console.log('checking row left')
+        this.findMovesReverse(board,"row",location.row,location.col,arr)
+        // console.log(arr)
+        // console.log('checking col down')
+        this.findMovesReverse(board,"col", location.col,location.row, arr)
+        // console.log(arr)
         return arr;
     
 }
