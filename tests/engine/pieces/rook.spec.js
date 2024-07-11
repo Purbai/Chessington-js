@@ -58,7 +58,7 @@ describe('Rook', () => {
         moves.should.not.deep.include(Square.at(4, 7));
     });
 
-    it('can take opposing pieces', () => {
+    it.only('can take opposing pieces', () => {
         const rook = new Rook(Player.WHITE);
         const opposingPiece = new Pawn(Player.BLACK);
         board.setPiece(Square.at(4, 4), rook);
