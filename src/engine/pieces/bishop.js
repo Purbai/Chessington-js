@@ -1,5 +1,6 @@
 import Piece from './piece';
 import Square from '../square';
+import King from './king';
 import GameSettings from '../gameSettings';
 
 export default class Bishop extends Piece {
@@ -9,6 +10,9 @@ export default class Bishop extends Piece {
 
     findDiaMoves(board,location, arr){
         let checkGetPiece;
+        let row;
+        let col;
+        let isKing;
     
         // 1. step through each diagonal piece - example
         // bishop position = 4,4 
@@ -21,25 +25,36 @@ export default class Bishop extends Piece {
         let noOfLoops = GameSettings.BOARD_SIZE -location.row; 
         for (let i=1 ; i < noOfLoops; i++)
         { 
-            if (location.col+i === GameSettings.BOARD_SIZE)
+            row = location.row+i;
+            col = location.col+i
+            if (col === GameSettings.BOARD_SIZE)
                 {
                     break
                 }
-    
+
              // check if square is unoccupied 
-            checkGetPiece = board.getPiece(Square.at(location.row+i,location.col+i))
-            if (checkGetPiece !== undefined)
+            checkGetPiece = board.getPiece(Square.at(row,col))
+            isKing = board.getPiece(Square.at(row,col)) instanceof King
+            if (checkGetPiece === undefined)
                 {
                     // square is occupied hence exit loop
-                    break
+                    arr.push(Square.at(row, col))
                 }
-            else
-            {
-                //console.log('checking to ensure diagonal right down squares coordinates first', location.row, location.col,location.row +i, location.col+i)
-                // square is not occupied hence available move
-                arr.push(Square.at(location.row + i, location.col + i))
-    
-            }
+            // check if square is occupied by opposing piece which is a King
+            else if (checkGetPiece !== undefined && checkGetPiece.player !== this.player && isKing) {
+            // we cannot take this opposing piece which is a king hence not available
+                    break
+            } 
+            // check if square is occupied by opposing piece
+            else if (checkGetPiece !== undefined && checkGetPiece.player !== this.player) {
+                // we can take this opposing piece hence available
+                arr.push(Square.at(row, col))
+                break
+                } 
+            else if (checkGetPiece !== undefined && checkGetPiece.player == this.player) {
+                // we are on this piece hence not available
+                break
+             }
                 
         }
     
@@ -47,70 +62,111 @@ export default class Bishop extends Piece {
         noOfLoops = location.row; 
             for (let i= 1 ; i <= noOfLoops ; i++)
             { 
-                if (location.col +i === GameSettings.BOARD_SIZE)
+                row = location.row-i;
+                col = location.col+i
+                if (col === GameSettings.BOARD_SIZE)
                     {
                         break
                     }
                 checkGetPiece = board.getPiece(Square.at(location.row-i,location.col+i))
-                if (checkGetPiece !== undefined)
-                    {
-                        // square is occupied hence exit loop
-                        break
-                    }
-                else
-                    {
-                        //console.log('checking to ensure diagonal **left up squares coordinates first', location.row, location.col,location.row -i, location.col+i)
-                        // square is not occupied hence available move
-                        arr.push(Square.at(location.row - i, location.col + i))            
-                    }        
+                isKing = board.getPiece(Square.at(location.row-i,location.col+i)) instanceof King
+             // check if square is unoccupied 
+             checkGetPiece = board.getPiece(Square.at(row,col))
+             isKing = board.getPiece(Square.at(row,col)) instanceof King
+             if (checkGetPiece === undefined)
+                 {
+                     // square is occupied hence exit loop
+                     arr.push(Square.at(row, col))
+                 }
+             // check if square is occupied by opposing piece which is a King
+             else if (checkGetPiece !== undefined && checkGetPiece.player !== this.player && isKing) {
+             // we cannot take this opposing piece which is a king hence not available
+                     break
+             } 
+             // check if square is occupied by opposing piece
+             else if (checkGetPiece !== undefined && checkGetPiece.player !== this.player) {
+                 // we can take this opposing piece hence available
+                 arr.push(Square.at(row, col))
+                 break
+                 } 
+             else if (checkGetPiece !== undefined && checkGetPiece.player == this.player) {
+                 // we are on this piece hence not available
+                 break
+              }     
             }
     
             noOfLoops = GameSettings.BOARD_SIZE - location.col ; 
             // console.log('no of loops for right down', noOfLoops)        
             for (let i=1 ; i <= noOfLoops; i++)
                 { 
+                    row = location.row-i;
+                    col = location.col-i
                     //console.log('checking to ensure diagonal right up squares coordinates first', location.row, location.col,location.row -i, location.col-i)
     
-                    if (location.row-i < 0)
+                    if (row < 0)
                         {
                             //console.log('exited the loop',location.row, location.col,location.row -i, location.col-i)
                         break
                         }
-                    checkGetPiece = board.getPiece(Square.at(location.row-i,location.col-i))
-                    if (checkGetPiece !== undefined)
-                        {
-                            // square is occupied hence exit loop
-                            break
-                        }
-                    else
-                        {
-                            //console.log('checking to ensure diagonal right up squares coordinates first', location.row, location.col,location.row -i, location.col-i)
-                            // square is not occupied hence available move
-                            arr.push(Square.at(location.row - i, location.col - i))            
-                        }
-                }
+             // check if square is unoccupied 
+             checkGetPiece = board.getPiece(Square.at(row,col))
+             isKing = board.getPiece(Square.at(row,col)) instanceof King
+             if (checkGetPiece === undefined)
+                 {
+                     // square is occupied hence exit loop
+                     arr.push(Square.at(row, col))
+                 }
+             // check if square is occupied by opposing piece which is a King
+             else if (checkGetPiece !== undefined && checkGetPiece.player !== this.player && isKing) {
+             // we cannot take this opposing piece which is a king hence not available
+                     break
+             } 
+             // check if square is occupied by opposing piece
+             else if (checkGetPiece !== undefined && checkGetPiece.player !== this.player) {
+                 // we can take this opposing piece hence available
+                 arr.push(Square.at(row, col))
+                 break
+                 } 
+             else if (checkGetPiece !== undefined && checkGetPiece.player == this.player) {
+                 // we are on this piece hence not available
+                 break
+              }
+            }
     
         noOfLoops = location.col ; 
         //console.log('no of loops for left down', noOfLoops)
         for (let i= 1 ; i < noOfLoops +1 ; i++)
             { 
-                if (location.row+i === GameSettings.BOARD_SIZE)
+                row = location.row+i;
+                col = location.col-i
+                if (row === GameSettings.BOARD_SIZE)
                     {
                         break
                     }
         
-                 checkGetPiece = board.getPiece(Square.at(location.row+i,location.col-i))
-                if (checkGetPiece !== undefined)
-                    {
-                        // square is occupied hence exit loop
-                        break
-                    }
-                else
-                    {
-                        //console.log('checking to ensure diagonal **left down squares coordinates first', location.row, location.col,location.row +i, location.col-i)
-                        // square is not occupied hence available move
-                        arr.push(Square.at(location.row + i, location.col - i))            
-                    }            
+             // check if square is unoccupied 
+             checkGetPiece = board.getPiece(Square.at(row,col))
+             isKing = board.getPiece(Square.at(row,col)) instanceof King
+             if (checkGetPiece === undefined)
+                 {
+                     // square is occupied hence exit loop
+                     arr.push(Square.at(row, col))
+                 }
+             // check if square is occupied by opposing piece which is a King
+             else if (checkGetPiece !== undefined && checkGetPiece.player !== this.player && isKing) {
+             // we cannot take this opposing piece which is a king hence not available
+                     break
+             } 
+             // check if square is occupied by opposing piece
+             else if (checkGetPiece !== undefined && checkGetPiece.player !== this.player) {
+                 // we can take this opposing piece hence available
+                 arr.push(Square.at(row, col))
+                 break
+                 } 
+             else if (checkGetPiece !== undefined && checkGetPiece.player == this.player) {
+                 // we are on this piece hence not available
+                 break
+              }            
             }
     
     }
