@@ -8,7 +8,7 @@ export default class Bishop extends Piece {
         super(player);
     }
 
-    findDiaMoves(board,location, arr){
+    findDiagMoves(board,location, arr){
         let checkGetPiece;
         let row;
         let col;
@@ -31,69 +31,22 @@ export default class Bishop extends Piece {
                 {
                     break
                 }
-
-             // check if square is unoccupied 
-            checkGetPiece = board.getPiece(Square.at(row,col))
-            isKing = board.getPiece(Square.at(row,col)) instanceof King
-            if (checkGetPiece === undefined)
-                {
-                    // square is occupied hence exit loop
-                    arr.push(Square.at(row, col))
-                }
-            // check if square is occupied by opposing piece which is a King
-            else if (checkGetPiece !== undefined && checkGetPiece.player !== this.player && isKing) {
-            // we cannot take this opposing piece which is a king hence not available
-                    break
-            } 
-            // check if square is occupied by opposing piece
-            else if (checkGetPiece !== undefined && checkGetPiece.player !== this.player) {
-                // we can take this opposing piece hence available
-                arr.push(Square.at(row, col))
-                break
-                } 
-            else if (checkGetPiece !== undefined && checkGetPiece.player == this.player) {
-                // we are on this piece hence not available
-                break
-             }
-                
+            // check if square is available to move
+            if (this.checkMoveWithKing(row,col,arr, board)) {break}                
         }
-    
-    
+        
         noOfLoops = location.row; 
-            for (let i= 1 ; i <= noOfLoops ; i++)
-            { 
-                row = location.row-i;
-                col = location.col+i
-                if (col === GameSettings.BOARD_SIZE)
-                    {
-                        break
-                    }
-                checkGetPiece = board.getPiece(Square.at(location.row-i,location.col+i))
-                isKing = board.getPiece(Square.at(location.row-i,location.col+i)) instanceof King
-             // check if square is unoccupied 
-             checkGetPiece = board.getPiece(Square.at(row,col))
-             isKing = board.getPiece(Square.at(row,col)) instanceof King
-             if (checkGetPiece === undefined)
-                 {
-                     // square is occupied hence exit loop
-                     arr.push(Square.at(row, col))
-                 }
-             // check if square is occupied by opposing piece which is a King
-             else if (checkGetPiece !== undefined && checkGetPiece.player !== this.player && isKing) {
-             // we cannot take this opposing piece which is a king hence not available
-                     break
-             } 
-             // check if square is occupied by opposing piece
-             else if (checkGetPiece !== undefined && checkGetPiece.player !== this.player) {
-                 // we can take this opposing piece hence available
-                 arr.push(Square.at(row, col))
-                 break
-                 } 
-             else if (checkGetPiece !== undefined && checkGetPiece.player == this.player) {
-                 // we are on this piece hence not available
-                 break
-              }     
-            }
+        for (let i= 1 ; i <= noOfLoops ; i++)
+        { 
+            row = location.row-i;
+            col = location.col+i
+            if (col === GameSettings.BOARD_SIZE)
+                {
+                    break
+                }
+            // check if square is available to move
+            if (this.checkMoveWithKing(row,col,arr, board)) {break}   
+        }
     
             noOfLoops = GameSettings.BOARD_SIZE - location.col ; 
             // console.log('no of loops for right down', noOfLoops)        
@@ -108,29 +61,8 @@ export default class Bishop extends Piece {
                             //console.log('exited the loop',location.row, location.col,location.row -i, location.col-i)
                         break
                         }
-             // check if square is unoccupied 
-             checkGetPiece = board.getPiece(Square.at(row,col))
-             isKing = board.getPiece(Square.at(row,col)) instanceof King
-             if (checkGetPiece === undefined)
-                 {
-                     // square is occupied hence exit loop
-                     arr.push(Square.at(row, col))
-                 }
-             // check if square is occupied by opposing piece which is a King
-             else if (checkGetPiece !== undefined && checkGetPiece.player !== this.player && isKing) {
-             // we cannot take this opposing piece which is a king hence not available
-                     break
-             } 
-             // check if square is occupied by opposing piece
-             else if (checkGetPiece !== undefined && checkGetPiece.player !== this.player) {
-                 // we can take this opposing piece hence available
-                 arr.push(Square.at(row, col))
-                 break
-                 } 
-             else if (checkGetPiece !== undefined && checkGetPiece.player == this.player) {
-                 // we are on this piece hence not available
-                 break
-              }
+                // check if square is available to move
+                if (this.checkMoveWithKing(row,col,arr, board)) {break}
             }
     
         noOfLoops = location.col ; 
@@ -143,39 +75,49 @@ export default class Bishop extends Piece {
                     {
                         break
                     }
-        
-             // check if square is unoccupied 
-             checkGetPiece = board.getPiece(Square.at(row,col))
-             isKing = board.getPiece(Square.at(row,col)) instanceof King
-             if (checkGetPiece === undefined)
-                 {
-                     // square is occupied hence exit loop
-                     arr.push(Square.at(row, col))
-                 }
-             // check if square is occupied by opposing piece which is a King
-             else if (checkGetPiece !== undefined && checkGetPiece.player !== this.player && isKing) {
-             // we cannot take this opposing piece which is a king hence not available
-                     break
-             } 
-             // check if square is occupied by opposing piece
-             else if (checkGetPiece !== undefined && checkGetPiece.player !== this.player) {
-                 // we can take this opposing piece hence available
-                 arr.push(Square.at(row, col))
-                 break
-                 } 
-             else if (checkGetPiece !== undefined && checkGetPiece.player == this.player) {
-                 // we are on this piece hence not available
-                 break
-              }            
+                // check if square is available to move
+                if (this.checkMoveWithKing(row,col,arr, board)) {break}          
             }
     
     }
+
+    checkMoveWithKing(row, col, arr, board){
+        let breakOut = false;
+        let checkGetPiece;
+        let isKing;
+        // check piece        
+        checkGetPiece = board.getPiece(Square.at(row,col)) ;
+        isKing = board.getPiece(Square.at(row, col)) instanceof King
+          
+        // square is unoccupied
+        if( checkGetPiece === undefined ) {
+            //console.log('storing ', x,y)
+            arr.push({"row": row , "col" : col}) // push to available squares
+        } 
+        // check if square is occupied by opposing piece which is a King
+        else if (checkGetPiece !== undefined && checkGetPiece.player !== this.player && isKing) {
+            // we cannot take this opposing piece which is a king hence not available
+                breakOut = true;
+        } 
+        // check if square is occupied by opposing piece
+        else if (checkGetPiece !== undefined && checkGetPiece.player !== this.player) {
+        // we can take this opposing piece hence available
+            arr.push({"row": row , "col" : col});
+            breakOut = true
+        } 
+        else if (checkGetPiece !== undefined && checkGetPiece.player == this.player) {
+            // we are on this piece hence not available
+            breakOut = true
+        }
+        return breakOut
+    }
+    
     
     getAvailableMoves(board) {
         let location = board.findPiece(this);
         let arr =[];
         // find diagonal moves available
-        this.findDiaMoves(board,location, arr) 
+        this.findDiagMoves(board,location, arr) 
 
         return arr;
     }

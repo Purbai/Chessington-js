@@ -50,7 +50,7 @@ export default class Queen extends Piece {
     }
 }
 
-findDiaMoves(board,location, arr){
+findDiagMoves(board,location, arr){
     let checkGetPiece;
 
     // 1. step through each diagonal piece - example
@@ -167,7 +167,7 @@ findDiaMoves(board,location, arr){
         // find vertical moves available
         this.findMoves(board,"col", location.col, arr)
         // find diagonal moves available
-        this.findDiaMoves(board,location, arr) 
+        this.findDiagMoves(board,location, arr) 
 
         return arr;
     }
